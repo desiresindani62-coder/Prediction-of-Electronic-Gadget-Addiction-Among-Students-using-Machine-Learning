@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+data1.pickle
+data2.pickle
+*.log
+.DS_Store
