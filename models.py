@@ -14,8 +14,24 @@ class Model:
 
     def __init__(self):
         self.name = ''
-        path = r'C:\Users\pavan\Downloads\Code\dataset/STRESSDataset.csv'
-        df = pd.read_csv(path)
+        # Try to load from multiple possible locations
+        possible_paths = [
+            r'STRESSDataset.csv',
+            r'dataset/STRESSDataset.csv',
+            r'C:\Users\pavan\Downloads\Code\dataset/STRESSDataset.csv'
+        ]
+        
+        df = None
+        for path in possible_paths:
+            try:
+                df = pd.read_csv(path)
+                print(f"Dataset loaded from: {path}")
+                break
+            except FileNotFoundError:
+                continue
+        
+        if df is None:
+            raise FileNotFoundError(f"Could not find STRESSDataset.csv in any of these locations: {possible_paths}")
         df = df[['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10', 'class']]
 
         # Handling Missing Data

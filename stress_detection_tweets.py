@@ -10,10 +10,26 @@ class DepressionDetection:
 
     """# Loading the Data"""
     def __init__(self):
-        self.tweets = pd.read_csv(r'C:\Users\pavan\Downloads\Code\dataset/tweets.csv')
-        self.tweets.drop(['Unnamed: 0'], axis = 1, inplace = True)
-        self.tweets['label'].value_counts()
-        self.tweets.info()
+        # Try to load from multiple possible locations
+        possible_paths = [
+            r'tweets.csv',
+            r'dataset/tweets.csv',
+            r'C:\Users\pavan\Downloads\Code\dataset/tweets.csv'
+        ]
+        
+        self.tweets = None
+        for path in possible_paths:
+            try:
+                self.tweets = pd.read_csv(path)
+                print(f"Tweets dataset loaded from: {path}")
+                break
+            except FileNotFoundError:
+                continue
+        
+        if self.tweets is None:
+            print("Warning: tweets.csv not found. Depression detection features will be unavailable.")
+            self.tweets = pd.DataFrame({'message': [], 'label': []})
+            return
 
         self.totalTweets = 8000 + 2314
         trainIndex, testIndex = list(), list()
@@ -28,19 +44,23 @@ class DepressionDetection:
         self.trainData['label'].value_counts()
         self.testData['label'].value_counts()
 
-    def classify(processed_message,method):
+    def classify(self, processed_message, method):
 
-        pickle_in = open("data1.pickle","rb")
-        prob_depressive = pickle.load(pickle_in)
-        sum_tf_idf_depressive = pickle.load(pickle_in)
-        prob_positive = pickle.load(pickle_in)
-        sum_tf_idf_positive = pickle.load(pickle_in)
-        prob_depressive_tweet = pickle.load(pickle_in)
-        prob_positive_tweet = pickle.load(pickle_in)
+        try:
+            pickle_in = open("data1.pickle","rb")
+            prob_depressive = pickle.load(pickle_in)
+            sum_tf_idf_depressive = pickle.load(pickle_in)
+            prob_positive = pickle.load(pickle_in)
+            sum_tf_idf_positive = pickle.load(pickle_in)
+            prob_depressive_tweet = pickle.load(pickle_in)
+            prob_positive_tweet = pickle.load(pickle_in)
 
-        pickle_in = open("data2.pickle","rb")
-        depressive_words = pickle.load(pickle_in)
-        positive_words = pickle.load(pickle_in)
+            pickle_in = open("data2.pickle","rb")
+            depressive_words = pickle.load(pickle_in)
+            positive_words = pickle.load(pickle_in)
+        except FileNotFoundError:
+            print("Warning: Pickle files not found. Classification unavailable.")
+            return 0
 
         pDepressive, pPositive = 0, 0.
 

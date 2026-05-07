@@ -12,7 +12,12 @@ import numpy as np
 nltk.download('stopwords')
 
 set(stopwords.words('english'))
-app = Flask(__name__)
+
+# Configure Flask to use the correct template and static folders
+template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'HTML'))
+static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'static'))
+
+app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
 
 @app.route('/')
@@ -113,4 +118,6 @@ def predict():
     return render_template("result.html", result=result)
 
 app.secret_key = os.urandom(12)
-app.run(port=5987, host='0.0.0.0', debug=True)
+
+if __name__ == '__main__':
+    app.run(port=5000, host='0.0.0.0', debug=True)
